@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
  * @author laim0nas100
  */
 public class Config {
-
+    
     public static JDA getDefaultConfig(String bot_token) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(bot_token)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)

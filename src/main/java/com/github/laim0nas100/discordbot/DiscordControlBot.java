@@ -54,7 +54,7 @@ public class DiscordControlBot {
     }
 
     public DiscordControlBot(JDA jda, String guild_id, String commandPrefix) {
-        if(StringUtils.isBlank(commandPrefix)){
+        if (StringUtils.isBlank(commandPrefix)) {
             throw new IllegalArgumentException("Blank command prefix");
         }
         this.commandPrefix = commandPrefix;
@@ -140,17 +140,18 @@ public class DiscordControlBot {
     }
 
     protected boolean shouldIgnoreMessage(MessageReceivedEvent event) {
-        if (event.isWebhookMessage() || !event.isFromGuild() || event.getAuthor().isBot()) {
+        if (!event.isFromGuild() || !event.getGuild().getId().equals(guild_id)) {
             return true;
         }
-        if (!event.getGuild().getId().equals(guild_id)) {
-            return false;
-        }
-        Member member = event.getMember();
-        if (member == null) {
-            return true;
-        }
+
         if (ownerOnly) {
+            if (event.isWebhookMessage() || event.getAuthor().isBot()) {
+                return true;
+            }
+            Member member = event.getMember();
+            if(member == null){
+                return true;
+            }
             return !member.isOwner();
         }
         return false;

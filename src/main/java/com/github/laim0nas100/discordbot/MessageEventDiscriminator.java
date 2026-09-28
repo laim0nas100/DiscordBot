@@ -14,20 +14,35 @@ public interface MessageEventDiscriminator {
     public String description();
 
     public boolean test(DiscordControlBot bot, MessageReceivedEvent event);
+    
+    public static class NegatedMessageEventDescriminator implements MessageEventDiscriminator{
+        
+        public final MessageEventDiscriminator original;
+
+        public NegatedMessageEventDescriminator(MessageEventDiscriminator original) {
+            this.original = original;
+        }
+        
+
+        @Override
+        public String description() {
+            return "not "+original.description();
+        }
+
+        @Override
+        public boolean test(DiscordControlBot bot, MessageReceivedEvent event) {
+            return !original.test(bot, event);
+        }
+
+        @Override
+        public MessageEventDiscriminator not() {
+            return original;
+        }
+        
+    }
 
     public default MessageEventDiscriminator not() {
-        final MessageEventDiscriminator me = this;
-        return new MessageEventDiscriminator() {
-            @Override
-            public String description() {
-                return "not " + me.description();
-            }
-
-            @Override
-            public boolean test(DiscordControlBot bot, MessageReceivedEvent event) {
-                return !me.test(bot, event);
-            }
-        };
+        return new NegatedMessageEventDescriminator(this);
     }
 
     public static final MessageEventDiscriminator ENABLED_EVERYWHERE = new MessageEventDiscriminator() {

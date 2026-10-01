@@ -29,6 +29,12 @@
             <version>3.20.0</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>com.github.laim0nas100.Commons</groupId>
+            <artifactId>commonslb-threads</artifactId>
+            <version>2026.10v1-new</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
    
 </project>

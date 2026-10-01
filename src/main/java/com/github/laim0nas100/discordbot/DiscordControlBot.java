@@ -37,7 +37,7 @@ public class DiscordControlBot {
     static Logger logger = LoggerFactory.getLogger(DiscordControlBot.class);
 
     public static final String DEFAULT_COMMAND_PREFIX = "..";
-    protected final JDA jda;
+    protected final Services services;
 
     protected final String guild_id;
     protected final String commandPrefix;
@@ -49,33 +49,30 @@ public class DiscordControlBot {
 
     protected boolean ownerOnly = true;
 
-    public DiscordControlBot(JDA jda, String guild_id) throws InterruptedException {
-        this(jda, guild_id, DEFAULT_COMMAND_PREFIX);
+    public DiscordControlBot(Services servies, String guild_id) throws InterruptedException {
+        this(servies, guild_id, DEFAULT_COMMAND_PREFIX);
     }
 
-    public DiscordControlBot(JDA jda, String guild_id, String commandPrefix) {
+    public DiscordControlBot(Services services, String guild_id, String commandPrefix) {
         if (StringUtils.isBlank(commandPrefix)) {
             throw new IllegalArgumentException("Blank command prefix");
         }
         this.commandPrefix = commandPrefix;
         this.guild_id = Objects.requireNonNull(guild_id);
-        this.jda = Objects.requireNonNull(jda);
-        JDA.Status status = jda.getStatus();
-        if (status != JDA.Status.CONNECTED) {
-            throw new IllegalStateException("JDA is not connected");
-        }
+        this.services = Objects.requireNonNull(services);
+        services.assertJdaConnected();
 
-        this.listener = new CommanderDiscordListener(this);
-        jda.addEventListener(listener);
+        this.listener = services.async ? new CommanderDiscordListenerAsync(this) : new CommanderDiscordListener(this);
+        services.jda.addEventListener(listener);
         this.cache = new GuildCache();
         //assume the jda is ready
-        cache.buildFullCache(jda, guild_id);
+        cache.buildFullCache(services.jda, guild_id);
 
         logger.info("Bot is ready");
     }
 
     public Guild getGuild() {
-        return jda.getGuildById(guild_id);
+        return services.jda.getGuildById(guild_id);
     }
 
     public GuildCache getCache() {

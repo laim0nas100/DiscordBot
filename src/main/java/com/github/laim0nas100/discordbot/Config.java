@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
  */
 public class Config {
     
-    public static JDA getDefaultConfig(String bot_token) throws InterruptedException {
+    public static JDA getDefaultJDA(String bot_token) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(bot_token)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableCache(CacheFlag.ROLE_TAGS)
@@ -24,6 +24,10 @@ public class Config {
 
         jda.awaitReady();
         return jda;
+    }
+    
+    public static Services getDefaultConfig(String bot_token) throws InterruptedException{
+        return new Services(getDefaultJDA(bot_token), true);
     }
 
     public DiscordControlBot createDefaultBot(String bot_token, String guild_id) throws InterruptedException {
